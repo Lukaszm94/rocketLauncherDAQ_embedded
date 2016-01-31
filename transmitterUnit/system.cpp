@@ -25,9 +25,10 @@ void System::init()
 
 void System::update()
 {
-	unsigned long txStartTime = micros();
-	radio.write(packet.getPacketData(), packet.getPacketSize());
-	Serial.print("Tx time: ");
-	Serial.println(micros() - txStartTime);
-	packet.setPressure(packet.getPressure() + 1);
+	//unsigned long txStartTime = micros();
+	//radio.write(packet.getPacketData(), packet.getPacketSize());
+	//Serial.print("Tx time: ");
+	//Serial.println(micros() - txStartTime);
+	//packet.setPressure(packet.getPressure() + 1);
+	anemometer.update();
 }
