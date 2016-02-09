@@ -55,7 +55,7 @@ void setup()
 	Serial.begin(115200);
 	byte address[6] = "skaTX";
 	radio.begin();
-	radio.setPALevel(RF24_PA_LOW);
+	radio.setPALevel(RF24_PA_MAX);
 	radio.openReadingPipe(1, address);
 	radio.startListening();
 	Serial.println("Setup finished");

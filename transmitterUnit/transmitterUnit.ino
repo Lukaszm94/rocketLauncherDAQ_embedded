@@ -10,11 +10,10 @@ System sys;
 void setup()
 {
 	sys.init();
-	attachInterrupt(0, anemometerOnRisingEdge, RISING);
 }
 
 void loop()
 {
-	//delay(50);
+	delay(500);
 	sys.update();
 }

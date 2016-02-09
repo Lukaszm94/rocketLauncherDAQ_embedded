@@ -14,6 +14,8 @@ public:
 	void init();
 	void update();
 private:
+	void initializeRadio();
+
 	Anemometer anemometer;
 	Packet packet;
 	RF24 radio;
