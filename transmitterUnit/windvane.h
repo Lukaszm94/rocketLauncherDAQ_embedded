@@ -3,13 +3,15 @@
 
 #include "winddirection.h"
 
+#define WIND_VANE_ADC_CHANNEL 0
+
 class WindVane
 {
 public:
 	WindVane();
-	void updateWindDirection(float windVaneVoltage, char* windDirectionBuffer); //converts voltage from wind vane to wind direction and stores it in text buffer as N, NE, SW etc., null terminated
+	WindDirection getWindDirection();
 private:
-
+	
 };
 
 #endif

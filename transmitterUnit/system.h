@@ -3,8 +3,10 @@
 
 #include <Arduino.h>
 #include <RF24.h>
+#include <Adafruit_BMP085.h>
 #include "packet.h"
 #include "anemometer.h"
+#include "accelerometer.h"
 
 
 class System
@@ -15,10 +17,15 @@ public:
 	void update();
 private:
 	void initializeRadio();
+	void updateSensors();
+	void updatePacketData();
+	void sendPacket();
 
 	Anemometer anemometer;
+	Accelerometer accelerometer;
 	Packet packet;
 	RF24 radio;
+	Adafruit_BMP085 barometer;
 };
 
 #endif
