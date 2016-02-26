@@ -32,7 +32,7 @@
 #define BATTERY_VOLTAGE_MIN 0.0
 #define BATTERY_VOLTAGE_MAX 2.4
 
-#define GPS_FIX_AGE_MAX 255
+#define GPS_FIX_AGE_MAX 255UL
 
 Packet::Packet()
 {

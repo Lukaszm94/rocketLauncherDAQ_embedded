@@ -4,9 +4,11 @@
 #include <Arduino.h>
 #include <RF24.h>
 #include <Adafruit_BMP085.h>
+#include <TinyGPS.h>
 #include "packet.h"
 #include "anemometer.h"
 #include "accelerometer.h"
+#include "compass.h"
 
 
 class System
@@ -20,12 +22,17 @@ private:
 	void updateSensors();
 	void updatePacketData();
 	void sendPacket();
+	void updateGPS();
+	void updateGPSPacketData();
 
 	Anemometer anemometer;
 	Accelerometer accelerometer;
 	Packet packet;
 	RF24 radio;
 	Adafruit_BMP085 barometer;
+	TinyGPS gps;
+	Compass compass;
+	unsigned long lastRadioUpdate;
 };
 
 #endif

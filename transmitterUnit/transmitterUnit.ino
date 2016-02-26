@@ -3,6 +3,7 @@
 #include <I2Cdev.h>
 #include <MPU6050.h>
 #include <Adafruit_BMP085.h>
+#include <TinyGPS.h>
 #include "system.h"
 #include "packet.h"
 #include "windvane.h"
@@ -16,12 +17,11 @@ Accelerometer acc;
 void setup()
 {
 	sys.init();
-	acc.init();
+	//acc.init();
 }
 
 void loop()
 {
-	delay(500);
-	Serial.println(acc.getAngle());
+	//Serial.println(acc.getAngle());
 	sys.update();
 }
