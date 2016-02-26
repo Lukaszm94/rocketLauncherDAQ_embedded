@@ -58,7 +58,7 @@ void setup()
 	radio.setPALevel(RF24_PA_MAX);
 	radio.openReadingPipe(1, address);
 	radio.startListening();
-	Serial.println("Setup finished");
+	//Serial.println("Setup finished");
 }
 
 void loop()
@@ -74,6 +74,10 @@ void loop()
 			Serial.print("CRC error: ");
 			Serial.println(packet.verifyCRC());
 		}
+		Serial.println("---------");
+		/*Serial.write((char*) packet.getPacketData(), packet.getPacketSize());
+		Serial.write(0);
+		Serial.write(0);*/
 	}
 	delay(100);
 }
