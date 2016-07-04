@@ -2,7 +2,7 @@
 #define COMPASS_H
 
 #include <I2Cdev.h>
-#include "HMC5883L_2.h"
+#include "HMC5883L.h"
 
 class Compass
 {
@@ -12,12 +12,10 @@ public:
 	bool isConnected();
 	float getMagneticNorthAngle();
 private:
+	Vector transform(Vector rawValues);
+
 	bool connected;
-	void transformation(float uncalibrated_values[3]);
-	void getHeading();
 	HMC5883L compass;
-	float calibrated_values[3];
-	float xv, yv, zv;
 };
 
 #endif

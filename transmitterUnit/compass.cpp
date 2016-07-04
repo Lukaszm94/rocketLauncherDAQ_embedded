@@ -1,51 +1,14 @@
 #include "compass.h"
 
-
-
-//calibrated_values[3] is the global array where the calibrated data will be placed
-//calibrated_values[3]: [0]=Xc, [1]=Yc, [2]=Zc
-   
-//transformation(float uncalibrated_values[3]) is the function of the magnetometer data correction 
-//uncalibrated_values[3] is the array of the non calibrated magnetometer data
-//uncalibrated_values[3]: [0]=Xnc, [1]=Ync, [2]=Znc
-void Compass::transformation(float uncalibrated_values[3])
-{
-	//calibration_matrix[3][3] is the transformation matrix
-	//replace M11, M12,..,M33 with your transformation matrix data
-	double calibration_matrix[3][3] = 
-	{
-		{1.52, -0.001, -0.135},
-		{-0.035, 1.454, -0.096},
-		{0.081, 0.004, 1.633}  
-	};
-	//bias[3] is the bias
-	//replace Bx, By, Bz with your bias data
-	double bias[3] = 
-	{
-		522.2,
-		248.3,
-		188.2
-	};
-	//calculation
-	for (int i=0; i<3; ++i) uncalibrated_values[i] = uncalibrated_values[i] - bias[i];
-	float result[3] = {0, 0, 0};
-	for (int i=0; i<3; ++i)
-		for (int j=0; j<3; ++j)
-			result[i] += calibration_matrix[i][j] * uncalibrated_values[j];
-	for (int i=0; i<3; ++i) calibrated_values[i] = result[i];
-}
-
 Compass::Compass()
 {
-	compass = HMC5883L();
-	connected = true;
+	connected = false;
 }
 
 void Compass::init()
 {
 	Wire.begin();
-	compass.SetScale(0.88);
-	compass.SetMeasurementMode(Measurement_Continuous);
+	connected = compass.begin();
 }
 
 bool Compass::isConnected()
@@ -58,8 +21,7 @@ float Compass::getMagneticNorthAngle()
 	if(!connected) {
 		return 0.0;
 	}
-	float values_from_magnetometer[3];
-	getHeading();
+	Vector rawValues = compass.readRaw();
 	/*Serial.print(xv);
 	Serial.print(", ");
 	Serial.print(yv);
@@ -67,22 +29,48 @@ float Compass::getMagneticNorthAngle()
 	Serial.print(zv);
 	Serial.print(", mag:");
 	Serial.println(sqrt(xv*xv + yv*yv + zv*zv));*/
-	values_from_magnetometer[0] = xv;
-	values_from_magnetometer[1] = yv;
-	values_from_magnetometer[2] = zv;
-	transformation(values_from_magnetometer);
+	Vector calibratedValues = transform(rawValues);
 
-	float heading = atan2(calibrated_values[1], calibrated_values[2]);
+	float heading = atan2(calibratedValues.YAxis, calibratedValues.ZAxis);
 	if(heading < 0) {
 		heading += 2 * M_PI;
 	}
 	return heading * 180/M_PI;
 }
 
-void Compass::getHeading()
-{ 
-	MagnetometerRaw raw = compass.ReadRawAxis();
-	xv = (float)raw.XAxis;
-	yv = (float)raw.YAxis;
-	zv = (float)raw.ZAxis;
+//function called to calibrate raw data from the device
+Vector Compass::transform(Vector rawValues)
+{
+	float uncalibrated_values[3];
+	uncalibrated_values[0] = rawValues.XAxis;
+	uncalibrated_values[1] = rawValues.YAxis;
+	uncalibrated_values[2] = rawValues.ZAxis;
+	//calibration_matrix[3][3] is the transformation matrix
+	double calibration_matrix[3][3] =
+	{
+		{1.52, -0.001, -0.135},
+		{-0.035, 1.454, -0.096},
+		{0.081, 0.004, 1.633}
+	};
+
+	double bias[3] =
+	{
+		522.2,
+		248.3,
+		188.2
+	};
+	//calculation
+	for (int i=0; i<3; ++i) uncalibrated_values[i] = uncalibrated_values[i] - bias[i];
+	float result[3] = {0, 0, 0};
+	for (int i=0; i<3; ++i)
+		for (int j=0; j<3; ++j)
+			result[i] += calibration_matrix[i][j] * uncalibrated_values[j];
+
+	Vector calibratedValues;
+	calibratedValues.XAxis = result[0];
+	calibratedValues.YAxis = result[1];
+	calibratedValues.ZAxis = result[2];
+	return calibratedValues;
 }
+
+

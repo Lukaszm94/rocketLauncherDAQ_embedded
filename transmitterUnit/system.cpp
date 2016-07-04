@@ -111,7 +111,7 @@ void System::updatePacketData()
 void System::sendPacket()
 {
 	radio.write(packet.getPacketData(), packet.getPacketSize());
-	//printPacket(packet);
+	printPacket(packet);
 }
 
 void System::updateGPS()
@@ -136,7 +136,7 @@ void System::updateMagnetometerData()
 {
 	if(!compass.isConnected()) {
 		packet.setMagnetometerErrorFlag();
-		//Serial.println("Mag not connected");
+		Serial.println("Mag not connected");
 		return;
 	}
 	packet.setMagnetometerErrorFlag(false);

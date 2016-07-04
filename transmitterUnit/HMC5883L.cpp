@@ -30,47 +30,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 bool HMC5883L::begin()
 {
-    Wire.begin();
+	Wire.begin();
 
-    if ((fastRegister8(HMC5883L_REG_IDENT_A) != 0x48)
-    || (fastRegister8(HMC5883L_REG_IDENT_B) != 0x34)
-    || (fastRegister8(HMC5883L_REG_IDENT_C) != 0x33))
-    {
-	return false;
-    }
+	if ((fastRegister8(HMC5883L_REG_IDENT_A) != 0x48)
+	|| (fastRegister8(HMC5883L_REG_IDENT_B) != 0x34)
+	|| (fastRegister8(HMC5883L_REG_IDENT_C) != 0x33))
+	{
+		return false;
+	}
 
-    setRange(HMC5883L_RANGE_1_3GA);
-    setMeasurementMode(HMC5883L_CONTINOUS);
-    setDataRate(HMC5883L_DATARATE_15HZ);
-    setSamples(HMC5883L_SAMPLES_1);
+	xOffset = yOffset = 0.0;
+	setRange(HMC5883L_RANGE_0_88GA);
+	setMeasurementMode(HMC5883L_CONTINOUS);
+	setDataRate(HMC5883L_DATARATE_15HZ);
+	setSamples(HMC5883L_SAMPLES_8);
 
-    mgPerDigit = 0.92f;
-
-    return true;
+	return true;
 }
 
 Vector HMC5883L::readRaw(void)
 {
-    v.XAxis = readRegister16(HMC5883L_REG_OUT_X_M) - xOffset;
-    v.YAxis = readRegister16(HMC5883L_REG_OUT_Y_M) - yOffset;
-    v.ZAxis = readRegister16(HMC5883L_REG_OUT_Z_M);
+	v.XAxis = readRegister16(HMC5883L_REG_OUT_X_M) - xOffset;
+	v.YAxis = readRegister16(HMC5883L_REG_OUT_Y_M) - yOffset;
+	v.ZAxis = readRegister16(HMC5883L_REG_OUT_Z_M);
 
-    return v;
+	return v;
 }
 
 Vector HMC5883L::readNormalize(void)
 {
-    v.XAxis = ((float)readRegister16(HMC5883L_REG_OUT_X_M) - xOffset) * mgPerDigit;
-    v.YAxis = ((float)readRegister16(HMC5883L_REG_OUT_Y_M) - yOffset) * mgPerDigit;
-    v.ZAxis = (float)readRegister16(HMC5883L_REG_OUT_Z_M) * mgPerDigit;
+	v.XAxis = ((float)readRegister16(HMC5883L_REG_OUT_X_M) - xOffset) * mgPerDigit;
+	v.YAxis = ((float)readRegister16(HMC5883L_REG_OUT_Y_M) - yOffset) * mgPerDigit;
+	v.ZAxis = (float)readRegister16(HMC5883L_REG_OUT_Z_M) * mgPerDigit;
 
-    return v;
+	return v;
 }
 
 void HMC5883L::setOffset(int xo, int yo)
 {
-    xOffset = xo;
-    yOffset = yo;
+	xOffset = xo;
+	yOffset = yo;
 }
 
 void HMC5883L::setRange(hmc5883l_range_t range)
