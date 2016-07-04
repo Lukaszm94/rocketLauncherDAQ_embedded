@@ -3,7 +3,7 @@
 
 enum WindDirection
 {
-	Nx = 0, Sx, Wx, Ex, NWx, NEx, SWx, SEx
+	Nx = 0, NEx, Ex, SEx, S, SWx, Wx, NWx, UNKNOWN
 };
 
 #endif

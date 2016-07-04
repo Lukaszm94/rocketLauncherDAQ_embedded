@@ -14,7 +14,7 @@ float Accelerometer::getAngle()
 	if(ay == 0) {
 		angle = 90;
 	} else {
-		angle = atan2(az, ay) * 180 / 3.1415;
+		angle = -atan2(az, ay) * 180 / 3.1415;
 	}
 	return angle;
 }

@@ -1,8 +1,14 @@
 #include <RF24.h>
 #include "packet.h"
-#define NRF_CE_PIN 9 // PB1
-#define NRF_CSN_PIN 10 // PB2
+//PRO MINI
+//#define NRF_CE_PIN 8 // P
+//#define NRF_CSN_PIN 10 // P
+//NANO
+#define NRF_CE_PIN 9 // P
+#define NRF_CSN_PIN 10 // P
 #define DATA_BUFFER_SIZE 10
+
+
 
 #define TEST_MODE 1
 
@@ -30,8 +36,8 @@ void printPacket(Packet pack)
 	Serial.println(pack.getTemperature());
 	Serial.print("Battery voltage: ");
 	Serial.println(pack.getBatteryVoltage());
-	Serial.print("Weather station errors: ");
-	Serial.println(pack.getWeatherStationErrors());
+	Serial.print("Errors: ");
+	Serial.println(pack.getErrors(), HEX);
 	Serial.print("GPS fix age: ");
 	Serial.println(pack.getGPSFixAge());
 	Serial.print("GPS failed sentences: ");
@@ -57,8 +63,13 @@ void setup()
 	radio.begin();
 	radio.setPALevel(RF24_PA_MAX);
 	radio.openReadingPipe(1, address);
+	if(radio.setDataRate(RF24_250KBPS)) {
+		Serial.println("Setting 250kbps successful");
+	} else {
+		Serial.println("Setting 250kbps failed");
+	}
 	radio.startListening();
-	//Serial.println("Setup finished");
+	Serial.println("Setup finished");
 }
 
 void loop()
@@ -67,17 +78,17 @@ void loop()
 		delay(5); // wait for all the data to be received
 		radio.read(dataBuffer, sizeof(dataBuffer));
 		packet.loadPacketData(dataBuffer);
-		printPacket(packet);
+		/*printPacket(packet);
 		if(packet.verifyCRC() == 0) {
 			Serial.println("CRC ok");
 		} else {
 			Serial.print("CRC error: ");
 			Serial.println(packet.verifyCRC());
 		}
-		Serial.println("---------");
-		/*Serial.write((char*) packet.getPacketData(), packet.getPacketSize());
+		Serial.println("---------");*/
+		Serial.write((char*) packet.getPacketData(), packet.getPacketSize());
 		Serial.write(0);
-		Serial.write(0);*/
+		Serial.write(0);
 	}
 	delay(100);
 }

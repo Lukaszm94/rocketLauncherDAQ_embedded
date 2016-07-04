@@ -32,7 +32,16 @@
 #define BATTERY_VOLTAGE_MIN 0.0
 #define BATTERY_VOLTAGE_MAX 2.4
 
-#define GPS_FIX_AGE_MAX 255
+#define GPS_FIX_AGE_MAX 255UL
+
+#define ERROR_FLAG_OFFSET_BAROMETER 7
+#define ERROR_FLAG_OFFSET_MAGNETOMETER 6
+#define ERROR_FLAG_OFFSET_ACCELEROMETER 5
+#define ERROR_FLAG_OFFSET_ANEMOMETER 4
+#define ERROR_FLAG_OFFSET_WIND_VANE 3
+#define ERROR_FLAG_OFFSET_Y 2
+#define ERROR_FLAG_OFFSET_BATTERY 1
+#define ERROR_FLAG_OFFSET_X 0
 
 Packet::Packet()
 {
@@ -45,10 +54,10 @@ Packet::Packet()
 	setPressure(DEFAULT_PRESSURE);
 	setTemperature(DEFAULT_TEMPERATURE);
 	setBatteryVoltage(DEFAULT_BATTERY_VOLTAGE);
-	setWeatherStationErrors(DEFAULT_WEATHER_STATION_ERRORS);
 	setGPSFixAge(DEFAULT_GPS_FIX_AGE);
 	setGPSFailedSentencesCount(DEFAULT_GPS_FAILED_SENTENCES_COUNT);
 	setGPSStatus(DEFAULT_GPS_SATELLITES, DEFAULT_FIX_DETECTED);
+	clearErrorFlags();
 	isCRCUpToDate = false;
 }
 
@@ -106,12 +115,6 @@ void Packet::setBatteryVoltage(float voltage)
 	isCRCUpToDate = false;
 }
 
-void Packet::setWeatherStationErrors(uint8_t errors)
-{
-	packet.weatherStationErrors = errors;
-	isCRCUpToDate = false;
-}
-
 void Packet::setGPSFixAge(uint32_t age)
 {
 	if(age > GPS_FIX_AGE_MAX)
@@ -135,6 +138,42 @@ void Packet::setGPSStatus(uint8_t satellites, bool fixDetected)
 	status |= satellites;
 	packet.gpsStatus = status;
 	isCRCUpToDate = false;
+}
+
+void Packet::clearErrorFlags()
+{
+	packet.errors = 0;
+	isCRCUpToDate = false;
+}
+
+void Packet::setBarometerErrorFlag(bool set)
+{
+	setErrorFlag(ERROR_FLAG_OFFSET_BAROMETER, set);
+}
+
+void Packet::setMagnetometerErrorFlag(bool set)
+{
+	setErrorFlag(ERROR_FLAG_OFFSET_MAGNETOMETER, set);
+}
+
+void Packet::setAccelerometerErrorFlag(bool set)
+{
+	setErrorFlag(ERROR_FLAG_OFFSET_ACCELEROMETER, set);
+}
+
+void Packet::setAnemometerErrorFlag(bool set)
+{
+	setErrorFlag(ERROR_FLAG_OFFSET_ANEMOMETER, set);
+}
+
+void Packet::setWindVaneErrorFlag(bool set)
+{
+	setErrorFlag(ERROR_FLAG_OFFSET_WIND_VANE, set);
+}
+
+void Packet::setBatteryErrorFlag(bool set)
+{
+	setErrorFlag(ERROR_FLAG_OFFSET_BATTERY, set);
 }
 
 void* Packet::getPacketData()
@@ -216,9 +255,9 @@ float Packet::getBatteryVoltage()
 	return rescaleFloat((float)packet.batteryVoltage, BATTERY_VOLTAGE_OFFSET, BATTERY_VOLTAGE_MULTIPLIER);
 }
 
-uint8_t Packet::getWeatherStationErrors()
+uint8_t Packet::getErrors()
 {
-	return packet.weatherStationErrors;
+	return packet.errors;
 }
 
 uint8_t Packet::getGPSFixAge()
@@ -255,7 +294,7 @@ void Packet::updateCRC()
 
 uint8_t Packet::calculateCRC8()
 {
-	uint8_t crc8 = packet.windSpeed + packet.windDirection + packet.batteryVoltage + packet.weatherStationErrors + packet.gpsFixAge + packet.gpsFailedSentencesCount + packet.gpsStatus;
+	uint8_t crc8 = packet.windSpeed + packet.windDirection + packet.batteryVoltage + packet.errors + packet.gpsFixAge + packet.gpsFailedSentencesCount + packet.gpsStatus;
 	return crc8;
 }
 
@@ -308,4 +347,19 @@ float Packet::rescaleFloat(float val, float offset, float multiplier)
 	val = val / multiplier;
 	val -= offset;
 	return val;
+}
+
+void Packet::setErrorFlag(uint8_t index, bool set)
+{
+	uint8_t errors = packet.errors;
+	if(index > 7) {
+		return;
+	}
+	if(set) {
+		errors |= (1<<index);
+	} else {
+		errors &=~(1<<index);
+	}
+	packet.errors = errors;
+	isCRCUpToDate = false;
 }

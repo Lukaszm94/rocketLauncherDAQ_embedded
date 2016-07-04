@@ -12,16 +12,15 @@
 #include "battery.h"
 
 System sys;
-Accelerometer acc;
+
 
 void setup()
 {
 	sys.init();
-	//acc.init();
+	DDRD |= (1<<PD5);
 }
 
 void loop()
 {
-	//Serial.println(acc.getAngle());
 	sys.update();
 }

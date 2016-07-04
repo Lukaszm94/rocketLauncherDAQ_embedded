@@ -6,7 +6,7 @@
 #define ANEMOMETER_MAX_DT 2000 // in ms
 #define ANEMOMETER_DEBUG_DDR DDRD
 #define ANEMOMETER_DEBUG_PORT PORTD
-#define ANEMOMETER_DEBUG_PIN 6 // PD6
+#define ANEMOMETER_DEBUG_PIN PD5 // PD5
 #define ANEMOMETER_CALCULATIONS_PIN 4
 
 volatile unsigned long previousEdgeMs, currentEdgeMs;
@@ -14,18 +14,16 @@ volatile bool measurementConsumed;
 
 void anemometerOnRisingEdge()
 {
-	ANEMOMETER_DEBUG_PORT |= (1<<ANEMOMETER_DEBUG_PIN);
+	//ANEMOMETER_DEBUG_PORT |= (1<<ANEMOMETER_DEBUG_PIN);
 	previousEdgeMs = currentEdgeMs;
 	currentEdgeMs = millis();
 	measurementConsumed = false;
-	ANEMOMETER_DEBUG_PORT &=~(1<<ANEMOMETER_DEBUG_PIN);
+	//ANEMOMETER_DEBUG_PORT &=~(1<<ANEMOMETER_DEBUG_PIN);
 }
 
 Anemometer::Anemometer()
 {
 	ANEMOMETER_DEBUG_DDR |= (1<<ANEMOMETER_DEBUG_PIN);
-	//pinMode(ANEMOMETER_ISR_DEBUG_PIN, OUTPUT);
-	//pinMode(ANEMOMETER_CALCULATIONS_PIN, OUTPUT);
 	errorFlag = false;
 	measurementConsumed = true;
 	previousEdgeMs = 0;
@@ -35,12 +33,16 @@ Anemometer::Anemometer()
 
 void Anemometer::update()
 {
+	unsigned long lastEdgeDt = millis() - currentEdgeMs;
+	if(lastEdgeDt > ANEMOMETER_MAX_DT) {
+		lastMeasuredWindSpeed = 0;
+	}
 	if(!measurementConsumed) {
 		ANEMOMETER_DEBUG_PORT |= (1<<ANEMOMETER_DEBUG_PIN);
 		consumeNewMeasurement();
 		ANEMOMETER_DEBUG_PORT &=~(1<<ANEMOMETER_DEBUG_PIN);
-		Serial.print("Wind speed: ");
-		Serial.println(lastMeasuredWindSpeed);
+		/*Serial.print("Wind speed: ");
+		Serial.println(lastMeasuredWindSpeed);*/
 	}
 }
 

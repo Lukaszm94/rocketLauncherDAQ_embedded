@@ -9,6 +9,7 @@
 #include "anemometer.h"
 #include "accelerometer.h"
 #include "compass.h"
+#include "windvane.h"
 
 
 class System
@@ -23,9 +24,17 @@ private:
 	void updatePacketData();
 	void sendPacket();
 	void updateGPS();
-	void updateGPSPacketData();
+	
+	void updateBarometerData();
+	void updateMagnetometerData();
+	void updateAccelerometerData();
+	void updateAnemometerData();
+	void updateWindVaneData();
+	void updateGPSData();
+	void updateBatteryData();
 
 	Anemometer anemometer;
+	WindVane windVane;
 	Accelerometer accelerometer;
 	Packet packet;
 	RF24 radio;
@@ -33,6 +42,7 @@ private:
 	TinyGPS gps;
 	Compass compass;
 	unsigned long lastRadioUpdate;
+	unsigned long lastGPSStringTimestamp;
 };
 
 #endif
