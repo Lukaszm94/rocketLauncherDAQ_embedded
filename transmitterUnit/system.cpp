@@ -11,15 +11,15 @@
 
 void printPacket(Packet pack)
 {
-	Serial.print("Lat: ");
+	/*Serial.print("Lat: ");
 	Serial.print(pack.getLatitude());
 	Serial.print(", lon: ");
 	Serial.println(pack.getLongitude());
 	Serial.print("Rail angle: ");
-	Serial.println(pack.getRailAngle());
+	Serial.println(pack.getRailAngle());*/
 	Serial.print("North angle: ");
 	Serial.println(pack.getMagneticNorthAngle());
-	Serial.print("Wind speed: ");
+	/*Serial.print("Wind speed: ");
 	Serial.println(pack.getWindSpeed());
 	Serial.print("Wind direction: ");
 	Serial.println((int)pack.getWindDirection());
@@ -44,7 +44,7 @@ void printPacket(Packet pack)
 	Serial.print("CRC16: ");
 	Serial.println(pack.calculateCRC16());
 	Serial.print("CRC32: ");
-	Serial.println(pack.calculateCRC32());
+	Serial.println(pack.calculateCRC32());*/
 	
 }
 

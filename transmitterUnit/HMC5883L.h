@@ -95,6 +95,7 @@ class HMC5883L
 public:
 
 	bool begin(void);
+	bool isConnected();
 
 	Vector readRaw(void);
 	Vector readNormalize(void);

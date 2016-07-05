@@ -2,24 +2,33 @@
 
 Compass::Compass()
 {
-	connected = false;
+	wasDisconnected = false;
 }
 
 void Compass::init()
 {
 	Wire.begin();
-	connected = compass.begin();
+	wasDisconnected = !compass.begin();
 }
 
 bool Compass::isConnected()
 {
+	bool connected = compass.isConnected();
+	if(!connected) {
+		wasDisconnected = true;
+	}
 	return connected;
 }
 
 float Compass::getMagneticNorthAngle()
 {
-	if(!connected) {
+	if(!isConnected()) {
 		return 0.0;
+	}
+	if(wasDisconnected) {
+		Serial.println("REINITIALIZING");
+		init(); // if the device was disconnected and now is connected (maybe because of poor connector contact with pins)
+				//we need to reinitialize
 	}
 	Vector rawValues = compass.readRaw();
 	/*Serial.print(xv);

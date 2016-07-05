@@ -32,9 +32,7 @@ bool HMC5883L::begin()
 {
 	Wire.begin();
 
-	if ((fastRegister8(HMC5883L_REG_IDENT_A) != 0x48)
-	|| (fastRegister8(HMC5883L_REG_IDENT_B) != 0x34)
-	|| (fastRegister8(HMC5883L_REG_IDENT_C) != 0x33))
+	if (!isConnected())
 	{
 		return false;
 	}
@@ -46,6 +44,13 @@ bool HMC5883L::begin()
 	setSamples(HMC5883L_SAMPLES_8);
 
 	return true;
+}
+
+bool HMC5883L::isConnected()
+{
+	return (fastRegister8(HMC5883L_REG_IDENT_A) == 0x48)
+			&& (fastRegister8(HMC5883L_REG_IDENT_B) == 0x34)
+			&& (fastRegister8(HMC5883L_REG_IDENT_C) == 0x33);
 }
 
 Vector HMC5883L::readRaw(void)
@@ -203,20 +208,26 @@ void HMC5883L::writeRegister8(uint8_t reg, uint8_t value)
 uint8_t HMC5883L::fastRegister8(uint8_t reg)
 {
     uint8_t value;
+	//Serial.println("Begin");
     Wire.beginTransmission(HMC5883L_ADDRESS);
     #if ARDUINO >= 100
         Wire.write(reg);
-    #else
+	#else
+		//Serial.println("Send reg");
         Wire.send(reg);
     #endif
+	//Serial.println("End");
     Wire.endTransmission();
 
+	//Serial.println("Request");
     Wire.requestFrom(HMC5883L_ADDRESS, 1);
     #if ARDUINO >= 100
         value = Wire.read();
     #else
+		//Serial.println("Receive");
         value = Wire.receive();
-    #endif;
+	#endif
+	//Serial.println("End");
     Wire.endTransmission();
 
     return value;
@@ -241,7 +252,7 @@ uint8_t HMC5883L::readRegister8(uint8_t reg)
         value = Wire.read();
     #else
         value = Wire.receive();
-    #endif;
+	#endif
     Wire.endTransmission();
 
     return value;
@@ -268,7 +279,7 @@ int16_t HMC5883L::readRegister16(uint8_t reg)
     #else
         uint8_t vha = Wire.receive();
         uint8_t vla = Wire.receive();
-    #endif;
+	#endif
     Wire.endTransmission();
 
     value = vha << 8 | vla;

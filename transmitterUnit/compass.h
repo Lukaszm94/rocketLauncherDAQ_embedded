@@ -14,7 +14,7 @@ public:
 private:
 	Vector transform(Vector rawValues);
 
-	bool connected;
+	bool wasDisconnected;
 	HMC5883L compass;
 };
 
