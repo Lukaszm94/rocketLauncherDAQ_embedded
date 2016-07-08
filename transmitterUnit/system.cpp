@@ -20,10 +20,10 @@ void printPacket(Packet pack)
 	Serial.print("North angle: ");
 	Serial.println(pack.getMagneticNorthAngle());
 	/*Serial.print("Wind speed: ");
-	Serial.println(pack.getWindSpeed());
+	Serial.println(pack.getWindSpeed());*/
 	Serial.print("Wind direction: ");
 	Serial.println((int)pack.getWindDirection());
-	Serial.print("Pressure: ");
+	/*Serial.print("Pressure: ");
 	Serial.println(pack.getPressure());
 	Serial.print("Temperature: ");
 	Serial.println(pack.getTemperature());
@@ -110,7 +110,10 @@ void System::updatePacketData()
 
 void System::sendPacket()
 {
+	unsigned long startTime = micros();
 	radio.write(packet.getPacketData(), packet.getPacketSize());
+	Serial.print("Radio dt= ");
+	Serial.println(micros() - startTime);
 	printPacket(packet);
 }
 
@@ -163,7 +166,7 @@ void System::updateAnemometerData()
 
 void System::updateWindVaneData()
 {
-	WindDirection dir = windVane.getWindDirection();
+	WindDirection dir = windVane.getWindDirection(packet.getMagneticNorthAngle());
 	if(dir == UNKNOWN) {
 		packet.setWindVaneErrorFlag();
 		//Serial.println("wind vane not connected");

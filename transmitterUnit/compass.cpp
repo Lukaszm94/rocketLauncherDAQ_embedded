@@ -26,24 +26,36 @@ float Compass::getMagneticNorthAngle()
 		return 0.0;
 	}
 	if(wasDisconnected) {
-		Serial.println("REINITIALIZING");
+		//Serial.println("REINITIALIZING");
 		init(); // if the device was disconnected and now is connected (maybe because of poor connector contact with pins)
 				//we need to reinitialize
 	}
-	Vector rawValues = compass.readRaw();
-	/*Serial.print(xv);
+	int samplesCount = 10;
+	float sum = 0;
+	for(int i = 0; i < samplesCount; i++) {
+		Vector rawValues = compass.readRaw();
+		Vector calibratedValues = transform(rawValues);
+		float heading = atan2(calibratedValues.ZAxis, calibratedValues.YAxis);
+		if(heading < 0) {
+			heading += 2 * M_PI;
+		}
+		sum += heading;
+		//TODO when angle is close to 0deg, values like 0.2 and 359.8 get summed and averaged, which results in erroneous output
+	}
+	float heading = sum / samplesCount;
+	/*Vector rawValues = compass.readRaw();
+	Serial.print(rawValues.XAxis);
 	Serial.print(", ");
-	Serial.print(yv);
+	Serial.print(rawValues.YAxis);
 	Serial.print(", ");
-	Serial.print(zv);
-	Serial.print(", mag:");
-	Serial.println(sqrt(xv*xv + yv*yv + zv*zv));*/
+	Serial.println(rawValues.ZAxis);
 	Vector calibratedValues = transform(rawValues);
 
-	float heading = atan2(calibratedValues.YAxis, calibratedValues.ZAxis);
+	float heading = atan2(calibratedValues.ZAxis, calibratedValues.YAxis);
 	if(heading < 0) {
 		heading += 2 * M_PI;
-	}
+	}*/
+	//Serial.println(heading * 180 / M_PI);
 	return heading * 180/M_PI;
 }
 
