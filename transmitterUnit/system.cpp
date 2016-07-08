@@ -7,7 +7,7 @@
 #define DEBUG_PIN_1 PC3
 
 #define INFO_LED_PIN 6 // PD6
-#define RADIO_UPDATE_RATE_MS 1000
+#define RADIO_UPDATE_RATE_MS 100
 
 void printPacket(Packet pack)
 {
@@ -110,11 +110,8 @@ void System::updatePacketData()
 
 void System::sendPacket()
 {
-	unsigned long startTime = micros();
 	radio.write(packet.getPacketData(), packet.getPacketSize());
-	Serial.print("Radio dt= ");
-	Serial.println(micros() - startTime);
-	printPacket(packet);
+	//printPacket(packet);
 }
 
 void System::updateGPS()
@@ -139,7 +136,7 @@ void System::updateMagnetometerData()
 {
 	if(!compass.isConnected()) {
 		packet.setMagnetometerErrorFlag();
-		Serial.println("Mag not connected");
+		//Serial.println("Mag not connected");
 		return;
 	}
 	packet.setMagnetometerErrorFlag(false);
@@ -181,7 +178,7 @@ void System::updateGPSData()
 	/*unsigned long dt = millis() - lastGPSStringTimestamp;
 	if(dt > 3000) {
 		packet.setGPSErrorFlag();
-		Serial.println("gps not connected");
+		//Serial.println("gps not connected");
 	} else {
 		packet.setGPSErrorFlag(false);
 	}*/

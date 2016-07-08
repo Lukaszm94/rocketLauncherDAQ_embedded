@@ -43,19 +43,6 @@ float Compass::getMagneticNorthAngle()
 		//TODO when angle is close to 0deg, values like 0.2 and 359.8 get summed and averaged, which results in erroneous output
 	}
 	float heading = sum / samplesCount;
-	/*Vector rawValues = compass.readRaw();
-	Serial.print(rawValues.XAxis);
-	Serial.print(", ");
-	Serial.print(rawValues.YAxis);
-	Serial.print(", ");
-	Serial.println(rawValues.ZAxis);
-	Vector calibratedValues = transform(rawValues);
-
-	float heading = atan2(calibratedValues.ZAxis, calibratedValues.YAxis);
-	if(heading < 0) {
-		heading += 2 * M_PI;
-	}*/
-	//Serial.println(heading * 180 / M_PI);
 	return heading * 180/M_PI;
 }
 
