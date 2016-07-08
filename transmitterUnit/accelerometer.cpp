@@ -8,6 +8,7 @@ void Accelerometer::init()
 
 float Accelerometer::getAngle()
 {
+	//TODO if the device was disconnected after system's startup, then the device is uninitialized. Add code similiar to the one in Compass class
 	int16_t ax, ay, az;
 	mpu.getAcceleration(&ax, &ay, &az);
 	float angle = 0;
