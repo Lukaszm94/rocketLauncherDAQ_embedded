@@ -5,17 +5,15 @@
 #include <Wire.h>
 #include <I2Cdev.h>
 #include <MPU6050.h>
+#include "i2cdisconnectable.h"
 
-class Accelerometer
+class Accelerometer : public I2CDisconnectable
 {
-public:
-	Accelerometer();
-	void init();
-	float getAngle();
-	bool isConnected();
-
 private:
-	bool wasDisconnected;
+	float getValueImpl();
+	bool initImpl();
+	bool isConnectedImpl();
+
 	MPU6050 mpu;
 };
 

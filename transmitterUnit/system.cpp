@@ -152,7 +152,7 @@ void System::updateAccelerometerData()
 		return;
 	}
 	packet.setAccelerometerErrorFlag(false);
-	float angle = accelerometer.getAngle();
+	float angle = accelerometer.getValue();
 	packet.setRailAngle(angle);
 }
 
