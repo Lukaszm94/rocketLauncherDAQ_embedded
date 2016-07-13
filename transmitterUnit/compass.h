@@ -3,18 +3,16 @@
 
 #include <I2Cdev.h>
 #include "HMC5883L.h"
+#include "i2cdisconnectable.h"
 
-class Compass
+class Compass : public I2CDisconnectable
 {
-public:
-	Compass();
-	void init();
-	bool isConnected();
-	float getMagneticNorthAngle();
 private:
+	float getValueImpl();
+	bool initImpl();
+	bool isConnectedImpl();
 	Vector transform(Vector rawValues);
 
-	bool wasDisconnected;
 	HMC5883L compass;
 };
 

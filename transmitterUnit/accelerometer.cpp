@@ -1,14 +1,26 @@
 #include "accelerometer.h"
 
+Accelerometer::Accelerometer()
+{
+	wasDisconnected = false;
+}
+
 void Accelerometer::init()
 {
 	Wire.begin();
 	mpu.initialize();
+	wasDisconnected = !isConnected();
 }
 
 float Accelerometer::getAngle()
 {
 	//TODO if the device was disconnected after system's startup, then the device is uninitialized. Add code similiar to the one in Compass class
+	if(!isConnected()) {
+		return 0.0;
+	}
+	if(wasDisconnected) {
+		init();
+	}
 	int16_t ax, ay, az;
 	mpu.getAcceleration(&ax, &ay, &az);
 	float angle = 0;
@@ -22,5 +34,9 @@ float Accelerometer::getAngle()
 
 bool Accelerometer::isConnected()
 {
-	return mpu.testConnection();
+	bool connected = mpu.testConnection();
+	if(!connected) {
+		wasDisconnected = true;
+	}
+	return connected;
 }

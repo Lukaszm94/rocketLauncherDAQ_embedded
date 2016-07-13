@@ -9,10 +9,13 @@
 class Accelerometer
 {
 public:
+	Accelerometer();
 	void init();
 	float getAngle();
 	bool isConnected();
+
 private:
+	bool wasDisconnected;
 	MPU6050 mpu;
 };
 

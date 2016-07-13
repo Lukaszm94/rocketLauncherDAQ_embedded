@@ -11,7 +11,8 @@ SOURCES += \
     packet.cpp \
     system.cpp \
     windvane.cpp \
-    HMC5883L.cpp
+    HMC5883L.cpp \
+    i2cdisconnectable.cpp
 
 HEADERS += \
     accelerometer.h \
@@ -24,4 +25,5 @@ HEADERS += \
     winddirection.h \
     windvane.h \
     windvanelut.h \
-    HMC5883L.h
+    HMC5883L.h \
+    i2cdisconnectable.h

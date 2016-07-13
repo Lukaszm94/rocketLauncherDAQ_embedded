@@ -1,6 +1,6 @@
 #include "compass.h"
 
-Compass::Compass()
+/*Compass::Compass()
 {
 	wasDisconnected = false;
 }
@@ -44,6 +44,35 @@ float Compass::getMagneticNorthAngle()
 	}
 	float heading = sum / samplesCount;
 	return heading * 180/M_PI;
+}*/
+
+
+float Compass::getValueImpl()
+{
+	int samplesCount = 10;
+	float sum = 0;
+	for(int i = 0; i < samplesCount; i++) {
+		Vector rawValues = compass.readRaw();
+		Vector calibratedValues = transform(rawValues);
+		float heading = atan2(calibratedValues.ZAxis, calibratedValues.YAxis);
+		if(heading < 0) {
+			heading += 2 * M_PI;
+		}
+		sum += heading;
+		//TODO when angle is close to 0deg, values like 0.2 and 359.8 get summed and averaged, which results in erroneous output
+	}
+	float heading = sum / samplesCount;
+	return heading * 180/M_PI;
+}
+
+bool Compass::initImpl()
+{
+	return compass.begin();
+}
+
+bool Compass::isConnectedImpl()
+{
+	return compass.isConnected();
 }
 
 //function called to calibrate raw data from the device

@@ -7,7 +7,7 @@
 #define DEBUG_PIN_1 PC3
 
 #define INFO_LED_PIN 6 // PD6
-#define RADIO_UPDATE_RATE_MS 100
+#define RADIO_UPDATE_RATE_MS 1000
 
 void printPacket(Packet pack)
 {
@@ -140,7 +140,7 @@ void System::updateMagnetometerData()
 		return;
 	}
 	packet.setMagnetometerErrorFlag(false);
-	float angle = compass.getMagneticNorthAngle();
+	float angle = compass.getValue();
 	packet.setMagneticNorthAngle(angle);
 }
 
