@@ -1,5 +1,6 @@
 #include "system.h"
 #include <Arduino.h>
+#include <avr/wdt.h>
 #include "anemometer.h"
 #include "battery.h"
 #define NRF_CSN_PIN 10 // PB2
@@ -79,6 +80,7 @@ void System::update()
 		lastRadioUpdate = millis();
 		sendPacket();
 		digitalWrite(INFO_LED_PIN, LOW);
+		resetWatchdog();
 	}
 }
 
@@ -89,6 +91,20 @@ void System::initializeRadio()
 	radio.setPALevel(RF24_PA_MIN);
 	radio.setDataRate(RF24_250KBPS);
 	radio.openWritingPipe((uint8_t*)address);
+}
+
+void System::setupWatchdog()
+{
+	cli();
+	resetWatchdog();
+	WDTCSR |= (1<<WDCE) | (1<<WDE); // enter WD configuration mode
+	WDTCSR = (1<<WDIE) | (1<<WDE) | (1<<WDP3); // enable WD interrupt, enable system reset, 4ms time-out
+	sei();
+}
+
+void System::resetWatchdog()
+{
+	wdt_reset();
 }
 
 void System::updateSensors()

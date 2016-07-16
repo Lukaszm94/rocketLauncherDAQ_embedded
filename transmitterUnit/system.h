@@ -20,10 +20,13 @@ public:
 	void update();
 private:
 	void initializeRadio();
+	void setupWatchdog();
+	void resetWatchdog();
 	void updateSensors();
 	void updatePacketData();
 	void sendPacket();
 	void updateGPS();
+
 	
 	void updateBarometerData();
 	void updateMagnetometerData();
