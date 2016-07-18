@@ -1,16 +1,11 @@
 #include <RF24.h>
 #include "packet.h"
-//PRO MINI
-//#define NRF_CE_PIN 8 // P
-//#define NRF_CSN_PIN 10 // P
-//NANO
-#define NRF_CE_PIN 9 // P
-#define NRF_CSN_PIN 10 // P
-#define DATA_BUFFER_SIZE 10
 
+#define NRF_CE_PIN 9
+#define NRF_CSN_PIN 10
 
-
-#define TEST_MODE 1
+#define DEBUG 0
+#define LED_PIN 5
 
 RF24 radio(NRF_CE_PIN, NRF_CSN_PIN);
 Packet packet;
@@ -59,36 +54,37 @@ void printPacket(Packet pack)
 void setup()
 {
 	Serial.begin(115200);
+	pinMode(LED_PIN, OUTPUT);
 	byte address[6] = "skaTX";
 	radio.begin();
 	radio.setPALevel(RF24_PA_MAX);
 	radio.openReadingPipe(1, address);
 	if(radio.setDataRate(RF24_250KBPS)) {
-		Serial.println("Setting 250kbps successful");
+		#if DEBUG
+			Serial.println("Setting 250kbps successful");
+		#endif
 	} else {
-		Serial.println("Setting 250kbps failed");
+		#if DEBUG
+			Serial.println("Setting 250kbps failed");
+		#endif
 	}
 	radio.startListening();
-	Serial.println("Setup finished");
+	#if DEBUG
+		Serial.println("Setup finished");
+	#endif
 }
 
 void loop()
 {
 	if(radio.available()) {
+		digitalWrite(LED_PIN, HIGH);
 		delay(5); // wait for all the data to be received
 		radio.read(dataBuffer, sizeof(dataBuffer));
 		packet.loadPacketData(dataBuffer);
-		/*printPacket(packet);
-		if(packet.verifyCRC() == 0) {
-			Serial.println("CRC ok");
-		} else {
-			Serial.print("CRC error: ");
-			Serial.println(packet.verifyCRC());
-		}
-		Serial.println("---------");*/
 		Serial.write((char*) packet.getPacketData(), packet.getPacketSize());
 		Serial.write(0);
 		Serial.write(0);
 	}
-	delay(100);
+	delay(20);
+	digitalWrite(LED_PIN, LOW);
 }
