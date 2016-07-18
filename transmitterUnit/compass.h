@@ -5,6 +5,13 @@
 #include "HMC5883L.h"
 #include "i2cdisconnectable.h"
 
+struct Vector
+{
+	float XAxis;
+	float YAxis;
+	float ZAxis;
+};
+
 class Compass : public I2CDisconnectable
 {
 private:

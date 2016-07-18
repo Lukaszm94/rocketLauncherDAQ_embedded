@@ -5,10 +5,9 @@
 #include "battery.h"
 #define NRF_CSN_PIN 10 // PB2
 #define NRF_CE_PIN 8 // PB0
-#define DEBUG_PIN_1 PC3
 
 #define INFO_LED_PIN 6 // PD6
-#define RADIO_UPDATE_RATE_MS 1000
+#define RADIO_UPDATE_RATE_MS 100
 
 void printPacket(Packet pack)
 {
@@ -56,17 +55,20 @@ System::System() : radio(NRF_CE_PIN, NRF_CSN_PIN)
 
 void System::init()
 {
-	DDRC |= (1<<DEBUG_PIN_1);
+	//wdt_reset();
 	pinMode(INFO_LED_PIN, OUTPUT);
 	lastRadioUpdate = 0;
 	Serial.begin(9600);
+	delay(20);
+
+	SPI.begin();
 	initializeRadio();
 	accelerometer.init();
 	compass.init();
 	if(!barometer.begin()) {
 		packet.setBarometerErrorFlag();
 	}
-	
+	setupWatchdog();
 	attachInterrupt(digitalPinToInterrupt(2), anemometerOnRisingEdge, RISING);
 }
 
@@ -87,9 +89,15 @@ void System::update()
 void System::initializeRadio()
 {
 	char address[6] = "skaTX";
-	radio.begin();
+	if(!radio.begin()) {
+		//Serial.println("Radio init failed!");
+		return;
+	}
+	delay(10);
 	radio.setPALevel(RF24_PA_MIN);
+	delay(10);
 	radio.setDataRate(RF24_250KBPS);
+	delay(10);
 	radio.openWritingPipe((uint8_t*)address);
 }
 
@@ -98,7 +106,7 @@ void System::setupWatchdog()
 	cli();
 	resetWatchdog();
 	WDTCSR |= (1<<WDCE) | (1<<WDE); // enter WD configuration mode
-	WDTCSR = (1<<WDIE) | (1<<WDE) | (1<<WDP3); // enable WD interrupt, enable system reset, 4ms time-out
+	WDTCSR = (1<<WDIE) | (1<<WDE) | (1<<WDP3); // enable WD interrupt, enable system reset, 4000ms time-out
 	sei();
 }
 

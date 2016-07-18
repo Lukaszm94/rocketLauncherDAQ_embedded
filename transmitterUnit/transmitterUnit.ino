@@ -4,6 +4,7 @@
 #include <MPU6050.h>
 #include <Adafruit_BMP085.h>
 #include <TinyGPS.h>
+#include <avr/wdt.h>
 #include "system.h"
 #include "packet.h"
 #include "windvane.h"
@@ -13,14 +14,17 @@
 
 System sys;
 
-
 void setup()
 {
 	sys.init();
-	DDRD |= (1<<PD5);
 }
 
 void loop()
 {
 	sys.update();
+}
+
+ISR(WDT_vect)
+{
+
 }

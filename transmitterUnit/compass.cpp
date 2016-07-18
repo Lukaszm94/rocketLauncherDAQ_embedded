@@ -2,10 +2,13 @@
 
 float Compass::getValueImpl()
 {
-	int samplesCount = 10;
+	int samplesCount = 5;
 	float sum = 0;
 	for(int i = 0; i < samplesCount; i++) {
-		Vector rawValues = compass.readRaw();
+		Vector rawValues;
+		rawValues.XAxis = compass.getHeadingX();
+		rawValues.YAxis = compass.getHeadingY();
+		rawValues.ZAxis = compass.getHeadingZ();
 		Vector calibratedValues = transform(rawValues);
 		float heading = atan2(calibratedValues.ZAxis, calibratedValues.YAxis);
 		if(heading < 0) {
@@ -20,12 +23,14 @@ float Compass::getValueImpl()
 
 bool Compass::initImpl()
 {
-	return compass.begin();
+	compass.initialize();
+	compass.setGain(HMC5883L_GAIN_1370);
+	return compass.testConnection();
 }
 
 bool Compass::isConnectedImpl()
 {
-	return compass.isConnected();
+	return compass.testConnection();
 }
 
 //function called to calibrate raw data from the device
