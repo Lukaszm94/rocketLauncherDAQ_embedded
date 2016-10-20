@@ -7,7 +7,9 @@
 #define NRF_CE_PIN 8 // PB0
 
 #define INFO_LED_PIN 6 // PD6
-#define RADIO_UPDATE_RATE_MS 100
+#define RADIO_UPDATE_RATE_MS 500
+
+#define DEBUG 1
 
 void printPacket(Packet pack)
 {
@@ -58,7 +60,7 @@ void System::init()
 	//wdt_reset();
 	pinMode(INFO_LED_PIN, OUTPUT);
 	lastRadioUpdate = 0;
-	Serial.begin(9600);
+	Serial.begin(115200);
 	delay(20);
 
 	SPI.begin();
@@ -83,6 +85,10 @@ void System::update()
 		sendPacket();
 		digitalWrite(INFO_LED_PIN, LOW);
 		resetWatchdog();
+		#if DEBUG
+			Serial.print("Radio update, dt= ");
+			Serial.println(dt);
+		#endif
 	}
 }
 
@@ -90,8 +96,14 @@ void System::initializeRadio()
 {
 	char address[6] = "skaTX";
 	if(!radio.begin()) {
-		//Serial.println("Radio init failed!");
+		#if DEBUG
+			Serial.println("Radio init failed!");
+		#endif
 		return;
+	} else {
+		#if DEBUG
+			Serial.println("Radio init OK");
+		#endif
 	}
 	delay(10);
 	radio.setPALevel(RF24_PA_MIN);
@@ -134,7 +146,18 @@ void System::updatePacketData()
 
 void System::sendPacket()
 {
-	radio.write(packet.getPacketData(), packet.getPacketSize());
+	#if DEBUG
+		Serial.println("Sending packet");
+	#endif
+	if(radio.write(packet.getPacketData(), packet.getPacketSize())) {
+		#if DEBUG
+			Serial.println("Transmission OK");
+		#endif
+	} else {
+		#if DEBUG
+			Serial.println("Transmission failed");
+		#endif
+	}
 	//printPacket(packet);
 }
 
