@@ -179,12 +179,13 @@ void Packet::setBatteryErrorFlag(bool set)
 void* Packet::getPacketData()
 {
 	updateCRC();
-	return (void*) &packet;
+	loadPacketDataToBinaryBuffer();
+	return (void*) binaryBuffer;
 }
 
 uint8_t Packet::getPacketSize()
 {
-	return sizeof(packet);
+	return BINARY_PACKET_SIZE;
 }
 
 #if INCL_RX_FUNC
@@ -313,6 +314,37 @@ uint8_t Packet::calculateCRC32()
 	}
 	uint8_t crc32 = tmp32 % 256;
 	return crc32;
+}
+
+void Packet::loadPacketDataToBinaryBuffer()
+{
+	binaryBuffer[0] = packet.windSpeed;
+	binaryBuffer[1] = packet.windDirection;
+	binaryBuffer[2] = packet.batteryVoltage;
+	binaryBuffer[3] = packet.errors;
+	binaryBuffer[4] = packet.gpsFixAge;
+	binaryBuffer[5] = packet.gpsFailedSentencesCount;
+	binaryBuffer[6] = packet.gpsStatus;
+	binaryBuffer[7] = packet.crc8;
+	binaryBuffer[8] = packet.crc16;
+	binaryBuffer[9] = packet.crc32;
+	// MSB first
+	binaryBuffer[10] = (packet.railAngle & 0xFF00) >> 8;
+	binaryBuffer[11] = packet.railAngle & 0x00FF;
+	binaryBuffer[12] = (packet.magneticNorthAngle & 0xFF00) >> 8;
+	binaryBuffer[13] = packet.magneticNorthAngle & 0x00FF;
+	binaryBuffer[14] = (packet.pressure & 0xFF00) >> 8;
+	binaryBuffer[15] = packet.pressure & 0x00FF;
+	binaryBuffer[16] = (packet.temperature & 0xFF00) >> 8;
+	binaryBuffer[17] = packet.temperature & 0x00FF;
+	binaryBuffer[18] = (packet.latitude & 0xFF000000) >> 24;
+	binaryBuffer[19] = (packet.latitude & 0x00FF0000) >> 16;
+	binaryBuffer[20] = (packet.latitude & 0x0000FF00) >> 8;
+	binaryBuffer[21] = (packet.latitude & 0x000000FF);
+	binaryBuffer[22] = (packet.longitude & 0xFF000000) >> 24;
+	binaryBuffer[23] = (packet.longitude & 0x00FF0000) >> 16;
+	binaryBuffer[24] = (packet.longitude & 0x0000FF00) >> 8;
+	binaryBuffer[25] = (packet.longitude & 0x000000FF);
 }
 
 float Packet::normalizeValue(float val, float min, float max)

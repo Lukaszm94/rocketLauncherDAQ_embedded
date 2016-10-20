@@ -19,6 +19,8 @@
 #define DEFAULT_GPS_SATELLITES 0
 #define DEFAULT_FIX_DETECTED false
 
+#define BINARY_PACKET_SIZE 26
+
 #define INCL_RX_FUNC 1
 
 
@@ -95,6 +97,7 @@ private:
 	uint8_t calculateCRC8();
 	uint8_t calculateCRC16();
 	uint8_t calculateCRC32();
+	void loadPacketDataToBinaryBuffer();
 	float normalizeValue(float val, float min, float max);
 	uint16_t convertFloatToU16(float val, float offset, float multiplier, float min, float max);
 	uint8_t convertFloatToU8(float val, float offset, float multiplier, float min, float max);
@@ -103,6 +106,7 @@ private:
 	void setErrorFlag(uint8_t index, bool set);
 
 	PacketStruct packet;
+	uint8_t binaryBuffer[BINARY_PACKET_SIZE];
 	bool isCRCUpToDate;
 };
 

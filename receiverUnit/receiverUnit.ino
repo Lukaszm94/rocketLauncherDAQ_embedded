@@ -7,9 +7,11 @@
 #define DEBUG 0
 #define LED_PIN 5
 
+#define BINARY_PACKET_SIZE 26
+
 RF24 radio(NRF_CE_PIN, NRF_CSN_PIN);
 Packet packet;
-char dataBuffer[sizeof(PacketStruct)];
+char dataBuffer[BINARY_PACKET_SIZE];
 
 void printPacket(Packet pack)
 {
@@ -79,12 +81,13 @@ void loop()
 	if(radio.available()) {
 		digitalWrite(LED_PIN, HIGH);
 		delay(5); // wait for all the data to be received
-		radio.read(dataBuffer, sizeof(dataBuffer));
-		packet.loadPacketData(dataBuffer);
+		radio.read(dataBuffer, BINARY_PACKET_SIZE);
+		/*packet.loadPacketData(dataBuffer);
 		Serial.write((char*) packet.getPacketData(), packet.getPacketSize());
 		Serial.write(0);
-		Serial.write(0);
+		Serial.write(0);*/
+		Serial.write(dataBuffer, BINARY_PACKET_SIZE);
 	}
-	delay(20);
+	delay(40);
 	digitalWrite(LED_PIN, LOW);
 }
