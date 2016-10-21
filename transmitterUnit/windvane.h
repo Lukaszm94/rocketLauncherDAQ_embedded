@@ -10,7 +10,7 @@ class WindVane
 {
 public:
 	WindVane();
-	WindDirection getWindDirection(float magneticBearing = 0.0);
+	WindDirection getWindDirection(float magneticBearing = 0.0); // by default not bearing (yaw) correction is applied
 private:
 	uint8_t convertReadingToLutIndex(uint16_t reading);
 	uint8_t applyMagneticBearingCorrection(uint8_t indexWithoutCorrection, float magneticBearing);

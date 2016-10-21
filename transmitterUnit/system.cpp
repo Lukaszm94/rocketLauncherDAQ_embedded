@@ -9,7 +9,7 @@
 #define INFO_LED_PIN 6 // PD6
 #define RADIO_UPDATE_RATE_MS 500
 
-#define DEBUG 1
+#define DEBUG 0
 
 void printPacket(Packet pack)
 {
@@ -57,10 +57,10 @@ System::System() : radio(NRF_CE_PIN, NRF_CSN_PIN)
 
 void System::init()
 {
-	//wdt_reset();
+	wdt_reset();
 	pinMode(INFO_LED_PIN, OUTPUT);
 	lastRadioUpdate = 0;
-	Serial.begin(115200);
+	Serial.begin(9600);
 	delay(20);
 
 	SPI.begin();
@@ -106,7 +106,7 @@ void System::initializeRadio()
 		#endif
 	}
 	delay(10);
-	radio.setPALevel(RF24_PA_MIN);
+	radio.setPALevel(RF24_PA_MAX);
 	delay(10);
 	radio.setDataRate(RF24_250KBPS);
 	delay(10);
@@ -210,7 +210,7 @@ void System::updateAnemometerData()
 
 void System::updateWindVaneData()
 {
-	WindDirection dir = windVane.getWindDirection(packet.getMagneticNorthAngle());
+	WindDirection dir = windVane.getWindDirection(/*packet.getMagneticNorthAngle()*/);
 	if(dir == UNKNOWN) {
 		packet.setWindVaneErrorFlag();
 		//Serial.println("wind vane not connected");
@@ -218,6 +218,10 @@ void System::updateWindVaneData()
 	}
 	packet.setWindVaneErrorFlag(false);
 	packet.setWindDirection(dir);
+	#if DEBUG
+		Serial.print("Wind direction(int): ");
+		Serial.println((int) dir);
+	#endif
 }
 
 void System::updateGPSData()

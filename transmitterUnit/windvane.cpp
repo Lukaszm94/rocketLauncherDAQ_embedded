@@ -14,8 +14,10 @@ WindDirection WindVane::getWindDirection(float magneticBearing)
 {
 	uint16_t reading = analogRead(WIND_VANE_ADC_CHANNEL);
 	uint8_t index = convertReadingToLutIndex(reading);
-	uint8_t indexCorrected = applyMagneticBearingCorrection(index, magneticBearing);
-	return convertLutIndexToWindDirection(indexCorrected);
+	if(magneticBearing >= 0.01) {
+		uint8_t index = applyMagneticBearingCorrection(index, magneticBearing);
+	}
+	return convertLutIndexToWindDirection(index);
 }
 
 uint8_t WindVane::convertReadingToLutIndex(uint16_t reading)

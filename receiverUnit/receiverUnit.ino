@@ -10,48 +10,7 @@
 #define BINARY_PACKET_SIZE 26
 
 RF24 radio(NRF_CE_PIN, NRF_CSN_PIN);
-Packet packet;
 char dataBuffer[BINARY_PACKET_SIZE];
-
-void printPacket(Packet pack)
-{
-	Serial.print("Lat: ");
-	Serial.print(pack.getLatitude());
-	Serial.print(", lon: ");
-	Serial.println(pack.getLongitude());
-	Serial.print("Rail angle: ");
-	Serial.println(pack.getRailAngle());
-	Serial.print("North angle: ");
-	Serial.println(pack.getMagneticNorthAngle());
-	Serial.print("Wind speed: ");
-	Serial.println(pack.getWindSpeed());
-	Serial.print("Wind direction: ");
-	Serial.println((int)pack.getWindDirection());
-	Serial.print("Pressure: ");
-	Serial.println(pack.getPressure());
-	Serial.print("Temperature: ");
-	Serial.println(pack.getTemperature());
-	Serial.print("Battery voltage: ");
-	Serial.println(pack.getBatteryVoltage());
-	Serial.print("Errors: ");
-	Serial.println(pack.getErrors(), HEX);
-	Serial.print("GPS fix age: ");
-	Serial.println(pack.getGPSFixAge());
-	Serial.print("GPS failed sentences: ");
-	Serial.println(pack.getGPSFailedSentencesCount());
-	Serial.print("Satellites: ");
-	Serial.println(pack.getGPSSatellitesCount());
-	Serial.print("GPS Fix Detected: ");
-	Serial.println((int)pack.getGPSFixDetected());
-	Serial.print("CRC8: ");
-	Serial.println(pack.calculateCRC8());
-	Serial.print("CRC16: ");
-	Serial.println(pack.calculateCRC16());
-	Serial.print("CRC32: ");
-	Serial.println(pack.calculateCRC32());
-	
-}
-
 
 void setup()
 {
@@ -73,6 +32,8 @@ void setup()
 	radio.startListening();
 	#if DEBUG
 		Serial.println("Setup finished");
+		Serial.print("Payload size: ");
+		Serial.println(radio.getPayloadSize());
 	#endif
 }
 
@@ -82,12 +43,8 @@ void loop()
 		digitalWrite(LED_PIN, HIGH);
 		delay(5); // wait for all the data to be received
 		radio.read(dataBuffer, BINARY_PACKET_SIZE);
-		/*packet.loadPacketData(dataBuffer);
-		Serial.write((char*) packet.getPacketData(), packet.getPacketSize());
-		Serial.write(0);
-		Serial.write(0);*/
 		Serial.write(dataBuffer, BINARY_PACKET_SIZE);
 	}
-	delay(40);
+	delay(20);
 	digitalWrite(LED_PIN, LOW);
 }
